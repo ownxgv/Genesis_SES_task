@@ -1,15 +1,13 @@
 package models
 
-import "gorm.io/gorm"
-
 type CurrencyRate struct {
-	gorm.Model
-	USDRate float64 `json:"usd_rate"`
+	ID      uint    `gorm:"primaryKey"`
+	USDRate float64 `gorm:"not null"`
 }
 
 type Subscription struct {
-	gorm.Model
-	Email string `json:"email"`
+	ID    uint   `gorm:"primaryKey"`
+	Email string `gorm:"not null;unique"`
 }
 
 type ErrorResponse struct {

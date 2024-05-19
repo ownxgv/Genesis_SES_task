@@ -1,6 +1,8 @@
-package configspackage configs
+package configs
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	Port        string `mapstructure:"PORT"`
@@ -13,7 +15,7 @@ type Config struct {
 	EmailPass   string `mapstructure:"EMAIL_PASS"`
 }
 
-var Config *Config
+var AppConfig *Config
 
 func LoadConfig() {
 	viper.SetConfigFile(".env")
@@ -22,8 +24,8 @@ func LoadConfig() {
 		panic(err)
 	}
 
-	Config = &Config{}
-	err = viper.Unmarshal(Config)
+	AppConfig = &Config{}
+	err = viper.Unmarshal(AppConfig)
 	if err != nil {
 		panic(err)
 	}

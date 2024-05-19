@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/your-username/currency-service/models"
+	"github.com/ownxgv/Genesis_SES_task/models"
 	"gorm.io/gorm"
 )
 

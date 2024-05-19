@@ -4,11 +4,13 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/your-username/currency-service/models"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"net/http"
 	"net/smtp"
+
+	"github.com/ownxgv/Genesis_SES_task/configs"
+	"github.com/ownxgv/Genesis_SES_task/models"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func ConnectDB() *gorm.DB {
@@ -36,7 +38,6 @@ type ExchangeRate struct {
 }
 
 func FetchUSDRate() (float64, error) {
-	// Запрос к API НБУ для получения курсов валют
 	resp, err := http.Get("https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json")
 	if err != nil {
 		return 0, err
@@ -47,13 +48,11 @@ func FetchUSDRate() (float64, error) {
 		return 0, fmt.Errorf("failed to fetch exchange rates, status: %d", resp.StatusCode)
 	}
 
-	// Декодируем JSON-ответ
 	var exchangeRates []ExchangeRate
 	if err := json.NewDecoder(resp.Body).Decode(&exchangeRates); err != nil {
 		return 0, err
 	}
 
-	// Находим курс гривны к доллару
 	for _, rate := range exchangeRates {
 		if rate.CurrencyCode == "USD" {
 			return rate.Rate, nil

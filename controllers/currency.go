@@ -1,57 +1,51 @@
+// controllers/currency.go
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/your-username/currency-service/models"
-	"github.com/your-username/currency-service/services"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/ownxgv/Genesis_SES_task/models"
+	"github.com/ownxgv/Genesis_SES_task/services" // Проверьте эту строку
 )
 
 type CurrencyController struct {
 	Service services.CurrencyService
 }
 
-func NewCurrencyController(service services.CurrencyService) CurrencyController {
-	return CurrencyController{Service: service}
+func NewCurrencyController(service services.CurrencyService) *CurrencyController {
+	return &CurrencyController{Service: service}
 }
 
-// GetCurrencyRate godoc
-// @Summary Get current UAH to USD rate
-// @Description Get the current exchange rate of UAH to USD
-// @Tags currency
-// @Produce json
-// @Success 200 {object} models.CurrencyRate
-// @Router /currency [get]
-func (c *CurrencyController) GetCurrencyRate(ctx *gin.Context) {
-	rate, err := c.Service.GetCurrencyRate()
+func (cc *CurrencyController) GetCurrencyRate(c *gin.Context) {
+	rate, err := cc.Service.GetCurrencyRate()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	ctx.JSON(http.StatusOK, rate)
+	c.JSON(http.StatusOK, rate)
 }
 
-// SubscribeEmail godoc
-// @Summary Subscribe to currency rate updates
-// @Description Subscribe to receive daily emails with the updated UAH to USD rate
-// @Tags subscription
-// @Param email body string true "Email address"
-// @Success 200 {string} string "ok"
-// @Failure 400 {object} models.ErrorResponse
-// @Router /subscribe [post]
-func (c *CurrencyController) SubscribeEmail(ctx *gin.Context) {
-	var req models.SubscriptionRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
+func (cc *CurrencyController) SubscribeEmail(c *gin.Context) {
+	var subscription models.Subscription
+	if err := c.BindJSON(&subscription); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := c.Service.SubscribeEmail(req.Email)
+	err := cc.Service.SubscribeEmail(subscription.Email)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "ok")
+	c.JSON(http.StatusOK, gin.H{"message": "Email subscribed successfully"})
+}
+
+func (s *CurrencyService) GetSubscriptions() ([]models.Subscription, error) {
+	subscriptions, err := s.Repo.GetSubscriptions()
+	if err != nil {
+		return nil, err
+	}
+	return subscriptions, nil
 }

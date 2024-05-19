@@ -1,4 +1,4 @@
-module github.com/your-username/currency-service
+module github.com/ownxgv/Genesis_SES_task
 
 go 1.16
 
