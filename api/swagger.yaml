@@ -1,0 +1,60 @@
+# api/swagger.yaml
+swagger: "2.0"
+info:
+  title: Currency Service API
+  version: 1.0.0
+  description: API for getting currency rates and subscribing to email notifications.
+host: localhost:8080
+basePath: /api/v1
+schemes:
+  - http
+paths:
+  /currency:
+    get:
+      summary: Get current UAH to USD rate
+      description: Get the current exchange rate of UAH to USD
+      tags:
+        - currency
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/CurrencyRate'
+  /subscribe:
+    post:
+      summary: Subscribe to currency rate updates
+      description: Subscribe to receive daily emails with the updated UAH to USD rate
+      tags:
+        - subscription
+      parameters:
+        - name: email
+          in: body
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            type: string
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+definitions:
+  CurrencyRate:
+    type: object
+    properties:
+      id:
+        type: integer
+      usd_rate:
+        type: number
+      created_at:
+        type: string
+      updated_at:
+        type: string
+  ErrorResponse:
+    type: object
+    properties:
+      error:
+        type: string
