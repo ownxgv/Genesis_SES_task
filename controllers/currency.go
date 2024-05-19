@@ -1,12 +1,13 @@
-// controllers/currency.go
+// Package controllers controllers/currency.go
 package controllers
 
 import (
+	"github.com/ownxgv/Genesis_SES_task/repositories"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ownxgv/Genesis_SES_task/models"
-	"github.com/ownxgv/Genesis_SES_task/services" // Проверьте эту строку
+	"github.com/ownxgv/Genesis_SES_task/services"
 )
 
 type CurrencyController struct {
@@ -40,6 +41,10 @@ func (cc *CurrencyController) SubscribeEmail(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Email subscribed successfully"})
+}
+
+type CurrencyService struct {
+	Repo repositories.CurrencyRepository
 }
 
 func (s *CurrencyService) GetSubscriptions() ([]models.Subscription, error) {

@@ -1,4 +1,3 @@
-// services/currency.go
 package services
 
 import (
@@ -10,11 +9,6 @@ import (
 type CurrencyService struct {
 	Repo repositories.CurrencyRepository
 }
-
-//
-//func NewCurrencyService(repo repositories.CurrencyRepository) *CurrencyService {
-//	return &CurrencyService{Repo: repo}
-//}
 
 func NewCurrencyService(repo repositories.CurrencyRepository) CurrencyService {
 	return CurrencyService{Repo: repo}
