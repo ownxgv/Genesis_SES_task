@@ -15,12 +15,12 @@ func NewCurrencyRepository(db *gorm.DB) *CurrencyRepository {
 
 func (r *CurrencyRepository) GetCurrencyRate() (*models.CurrencyRate, error) {
 	var rate models.CurrencyRate
-	err := r.DB.Last(&rate).Error
+	err := r.DB.Order("created_at desc, id desc").First(&rate).Error
 	return &rate, err
 }
 
 func (r *CurrencyRepository) SaveCurrencyRate(rate *models.CurrencyRate) error {
-	return r.DB.Create(rate).Error
+	return r.DB.Table("currency_rates").Create(rate).Error
 }
 
 func (r *CurrencyRepository) SubscribeEmail(email string) error {

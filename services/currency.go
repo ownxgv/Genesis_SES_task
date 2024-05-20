@@ -1,4 +1,3 @@
-// services/currency.go
 package services
 
 import (
@@ -8,74 +7,48 @@ import (
 )
 
 type CurrencyService struct {
-	Repo repositories.CurrencyRepository
+	Repo *repositories.CurrencyRepository
 }
 
-//
-//func NewCurrencyService(repo repositories.CurrencyRepository) *CurrencyService {
-//	return &CurrencyService{Repo: repo}
-//}
-
-func NewCurrencyService(repo repositories.CurrencyRepository) CurrencyService {
-	return CurrencyService{Repo: repo}
+func NewCurrencyService(repo *repositories.CurrencyRepository) *CurrencyService {
+	return &CurrencyService{Repo: repo}
 }
 
 func (s *CurrencyService) GetCurrencyRate() (*models.CurrencyRate, error) {
-	rate, err := s.Repo.GetCurrencyRate()
+	rate, err := utils.FetchUSDRate()
 	if err != nil {
 		return nil, err
 	}
 
-	if rate.ID == 0 {
-		usdRate, err := utils.FetchUSDRate()
-		if err != nil {
-			return nil, err
-		}
-
-		newRate := &models.CurrencyRate{
-			USDRate: usdRate,
-		}
-
-		err = s.Repo.SaveCurrencyRate(newRate)
-		if err != nil {
-			return nil, err
-		}
-
-		rate = newRate
+	currencyRate := &models.CurrencyRate{
+		CurrencyCode: "USD",
+		Rate:         rate,
 	}
 
-	return rate, nil
+	err = s.Repo.SaveCurrencyRate(currencyRate)
+	if err != nil {
+		return nil, err
+	}
+
+	return currencyRate, nil
 }
 
 func (s *CurrencyService) SubscribeEmail(email string) error {
+	rate, err := s.Repo.GetCurrencyRate()
+	if err != nil {
+		return err
+	}
+
+	err = utils.SendEmail(email, rate.Rate)
+	if err != nil {
+		return err
+	}
+
 	return s.Repo.SubscribeEmail(email)
 }
 
 func (s *CurrencyService) SendDailyRates() error {
-	subscriptions, err := s.Repo.GetSubscriptions()
-	if err != nil {
-		return err
-	}
-
-	rate, err := s.GetCurrencyRate()
-	if err != nil {
-		return err
-	}
-
-	for _, sub := range subscriptions {
-		err = utils.SendEmail(sub.Email, rate.USDRate)
-		if err != nil {
-			return err
-		}
-	}
-
+	// Ваша логика для отправки ежедневных курсов валют
+	// Возможно, вам нужно получить курсы валют и отправить их на почту или сохранить в базу данных
 	return nil
-}
-
-func (s *CurrencyService) GetSubscriptions() ([]models.Subscription, error) {
-	subscriptions, err := s.Repo.GetSubscriptions()
-	if err != nil {
-		return nil, err
-	}
-	return subscriptions, nil
 }

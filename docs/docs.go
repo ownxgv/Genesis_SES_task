@@ -34,8 +34,6 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "API for getting currency rates and subscribing to email notifications.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
 }
 
 func init() {

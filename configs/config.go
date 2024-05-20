@@ -18,7 +18,8 @@ type Config struct {
 var AppConfig *Config
 
 func LoadConfig() {
-	viper.SetConfigFile(".env")
+
+	viper.SetConfigFile("connections.env")
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(err)

@@ -1,4 +1,3 @@
-// routes/routes.go
 package routes
 
 import (
@@ -12,24 +11,18 @@ import (
 	"gorm.io/gorm"
 )
 
-// NewRouter создает новый маршрутизатор Gin с настроенными маршрутами API.
 func NewRouter(db *gorm.DB) *gin.Engine {
 	router := gin.Default()
 
-	// Инициализация репозиториев
 	currencyRepo := repositories.NewCurrencyRepository(db)
 
-	// Инициализация сервисов
-	currencyService := services.NewCurrencyService(*currencyRepo)
+	currencyService := services.NewCurrencyService(currencyRepo)
 
-	// Инициализация контроллеров
-	currencyController := controllers.NewCurrencyController(currencyService)
+	currencyController := controllers.NewCurrencyController(*currencyService)
 
-	// Документация Swagger
 	docs.SwaggerInfo.Host = "localhost:8080"
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// Маршруты API
 	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/currency", currencyController.GetCurrencyRate)

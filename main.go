@@ -12,15 +12,10 @@ import (
 )
 
 func main() {
-	// Load configurations
-	if err := configs.LoadConfig(); err != nil {
-		log.Fatalf("Failed to load configuration: %v", err)
-	}
 
-	// Connect to the database
+	configs.LoadConfig()
+
 	db := utils.ConnectDB()
-
-	// Run database migrations
 	utils.MigrateDB(db)
 
 	// Создание канала для ошибок
@@ -28,11 +23,10 @@ func main() {
 
 	// Создание сервиса валют
 	currencyRepo := repositories.NewCurrencyRepository(db)
-	var currencyService services.CurrencyService = services.NewCurrencyService(*currencyRepo)
+	currencyService := services.NewCurrencyService(currencyRepo)
 
-	// Запуск горутины для отправки ежедневных уведомлений
 	go func() {
-		ticker := time.NewTicker(24 * time.Hour) // каждые 24 часа
+		ticker := time.NewTicker(24 * time.Hour)
 		for {
 			select {
 			case <-ticker.C:
